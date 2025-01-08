@@ -71,7 +71,7 @@ def select_prompt_content(problem):
         
         # 영역 번호 추출
         classification_result = response['choices'][0]['message']['content'].strip()
-        return classification_result
+
         # 영역 번호에 따라 적절한 system_prompt_content 반환
         if classification_result == "1":
             return system_prompt_content_1
