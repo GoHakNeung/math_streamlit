@@ -11,6 +11,7 @@ st.title("초등학교 수학 문제 피드백 서비스")
 
 # 기본 입력 영역
 problem = st.text_area("수학 문제를 입력하세요:", placeholder="예: 직각삼각형 모양의 종이를 돌려 원뿔을 만들었을 때...")
+require_more_info = False
 
 # 피드백 요청 버튼
 if st.button("피드백 생성"):
@@ -30,6 +31,7 @@ if st.button("피드백 생성"):
                     combined_input = f"문제: {problem}\n추가 정보: {additional_info.strip()}"
                     st.write(combined_input)
                     with st.spinner("피드백을 생성 중입니다..."):
+                        require_more_info = False
                         feedback, _ = generate_feedback(combined_input)
                         st.subheader("생성된 피드백:")
                         st.write(feedback)
