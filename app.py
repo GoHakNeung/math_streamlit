@@ -29,7 +29,7 @@ if st.button("피드백 생성"):
                 st.session_state["additional_info_visible"] = True
             else:
                 st.subheader("생성된 피드백:")
-                st.write(feedback)
+                st.markdown(feedback)
     else:
         st.warning("문제를 입력해주세요!")
 
@@ -48,4 +48,4 @@ if st.session_state["additional_info_visible"]:
         with st.spinner("피드백을 생성 중입니다..."):
             feedback, _ = generate_feedback(combined_input)
             st.subheader("생성된 피드백:")
-            st.write(feedback)
+            st.markdown(feedback)
