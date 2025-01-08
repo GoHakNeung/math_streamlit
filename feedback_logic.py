@@ -43,7 +43,7 @@ system_prompt_tail = """
 """
 
 def select_prompt_content(problem):
-    """GPT-4o-mini를 사용하여 문제 내용을 분석하고 적절한 system_prompt_content를 선택"""
+    # """GPT-4o-mini를 사용하여 문제 내용을 분석하고 적절한 system_prompt_content를 선택"""
     try:
         # 문제 영역 판단을 위한 GPT 프롬프트
         classification_prompt = """
