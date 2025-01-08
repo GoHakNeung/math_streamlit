@@ -28,6 +28,7 @@ if st.button("피드백 생성"):
                 if st.button("추가 정보를 포함한 피드백 생성"):
                     # 기존 문제와 추가 정보를 결합하여 피드백 생성
                     combined_input = f"문제: {problem}\n추가 정보: {additional_info.strip()}"
+                    st.write(combined_input)
                     with st.spinner("피드백을 생성 중입니다..."):
                         feedback, _ = generate_feedback(combined_input)
                         st.subheader("생성된 피드백:")
