@@ -37,11 +37,13 @@ if st.button("피드백 생성"):
 if st.session_state["additional_info_visible"]:
     additional_info = st.text_area(
         "문제에 대한 추가 정보를 입력하세요:",
-        value=st.session_state["additional_info"],  # 상태에 저장된 값 유지
-        key="additional_info"
+        value=st.session_state["additional_info"],  # 유지된 값을 사용
+        key="additional_info",
+        on_change=lambda: st.session_state.update({"additional_info": st.session_state["additional_info"]})
     )
 
     if st.button("추가 정보를 포함한 피드백 생성"):
+        st.session_state["additional_info"] = additional_info  # 입력된 값을 상태에 저장
         combined_input = f"문제: {problem}\n추가 정보: {st.session_state['additional_info']}"
         with st.spinner("피드백을 생성 중입니다..."):
             feedback, _ = generate_feedback(combined_input)
