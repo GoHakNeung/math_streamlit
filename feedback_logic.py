@@ -42,9 +42,63 @@ system_prompt_tail = """
 마크다운 방식으로 출력해 주고, 중요한 부분은 굵기, 하이라이트 등을 이용해서 강조해 줘
 """
 
+def select_prompt_content(problem):
+    """GPT-4o-mini를 사용하여 문제 내용을 분석하고 적절한 system_prompt_content를 선택"""
+    try:
+        # 문제 영역 판단을 위한 GPT 프롬프트
+        classification_prompt = """
+        아래의 문제를 읽고, 해당 문제가 수학의 어떤 영역에 속하는지 판단하세요. 가능한 영역은 다음과 같습니다:
+        1. 수와 연산
+        2. 도형
+        3. 측정
+        4. 규칙성
+        5. 자료와 가능성
+
+        문제에 가장 적합한 영역 번호(1, 2, 3, 4, 5)를 하나만 출력하세요.
+
+        문제: {problem}
+        """
+        
+        # OpenAI Chat API 호출
+        response = openai.ChatCompletion.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": f"너는 문제를 분류하는 AI 도우미입니다. {system_prompt_head}를 참고해서 분류해 줘"},
+                {"role": "user", "content": classification_prompt.format(problem=problem)}
+            ]
+        )
+        
+        # 영역 번호 추출
+        classification_result = response['choices'][0]['message']['content'].strip()
+        
+        # 영역 번호에 따라 적절한 system_prompt_content 반환
+        if classification_result == "1":
+            return system_prompt_content_1
+        elif classification_result == "2":
+            return system_prompt_content_2
+        elif classification_result == "3":
+            return system_prompt_content_3
+        elif classification_result == "4":
+            return system_prompt_content_4
+        elif classification_result == "5":
+            return system_prompt_content_5
+        else:
+            return """
+            문제를 정확히 입력해주세요.
+            """
+    except Exception as e:
+        return f"오류 발생: {e}"
+
 def generate_feedback(problem):
     """GPT-4o-mini를 사용해 피드백 생성"""
     try:
+
+        # 적절한 system_prompt_content 선택
+        selected_content = select_prompt_content(problem)
+
+        # 최종 system_prompt 구성
+        system_prompt = system_prompt_head + selected_content + system_prompt_tail
+        
         # OpenAI Chat API 호출
         response = openai.ChatCompletion.create(
             model="gpt-4o-mini",
