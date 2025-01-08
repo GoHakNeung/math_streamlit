@@ -73,21 +73,21 @@ def select_prompt_content(problem):
         # 영역 번호 추출
         classification_result = response['choices'][0]['message']['content'].strip()
         return classification_result
-        # 영역 번호에 따라 적절한 system_prompt_content 반환
-        if classification_result == "1":
-            return system_prompt_content_1
-        elif classification_result == "2":
-            return system_prompt_content_2
-        elif classification_result == "3":
-            return system_prompt_content_3
-        elif classification_result == "4":
-            return system_prompt_content_4
-        elif classification_result == "5":
-            return system_prompt_content_5
-        else:
-            return """
-            문제를 정확히 입력해주세요.
-            """
+        # # 영역 번호에 따라 적절한 system_prompt_content 반환
+        # if classification_result == "1":
+        #     return system_prompt_content_1
+        # elif classification_result == "2":
+        #     return system_prompt_content_2
+        # elif classification_result == "3":
+        #     return system_prompt_content_3
+        # elif classification_result == "4":
+        #     return system_prompt_content_4
+        # elif classification_result == "5":
+        #     return system_prompt_content_5
+        # else:
+        #     return """
+        #     문제를 정확히 입력해주세요.
+        #     """
     except Exception as e:
         return f"오류 발생: {e}"
 
