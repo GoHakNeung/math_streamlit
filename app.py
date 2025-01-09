@@ -53,7 +53,7 @@ if st.session_state["additional_info_visible"]:
             st.markdown(feedback)
 
 # 카메라 입력 영역
-camera_button_label = "📷 카메라 열기" if not st.session_state["camera_mode"] else "📸 촬영"
+camera_button_label = "📷" if not st.session_state["camera_mode"] else "촬영"
 
 if st.button(camera_button_label):
     if not st.session_state["camera_mode"]:
