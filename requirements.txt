@@ -1,3 +1,7 @@
+pip install --upgrade pip 
+pip install opencv-python-headless
+
+
 streamlit
 openai==0.28
 pandas
