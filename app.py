@@ -18,6 +18,8 @@ if "additional_info_visible" not in st.session_state:
     st.session_state["additional_info_visible"] = False
 if "additional_info_content" not in st.session_state:
     st.session_state["additional_info_content"] = ""
+if "camera_active" not in st.session_state:
+    st.session_state["camera_active"] = False
 
 # 문제 입력 영역
 problem = st.text_area("수학 문제를 입력하세요:", placeholder="예: 직각삼각형 모양의 종이를 돌려 원뿔을 만들었을 때...")
