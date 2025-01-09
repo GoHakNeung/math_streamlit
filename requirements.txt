@@ -1,8 +1,6 @@
-pip install --upgrade pip 
-pip install opencv-python-headless
 streamlit
 openai==0.28
 pandas
-streamlit_webrtc
-cv2
+streamlit-webrtc
+opencv-python-headless
 pytesseract
