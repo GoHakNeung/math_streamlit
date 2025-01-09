@@ -49,3 +49,30 @@ if st.session_state["additional_info_visible"]:
             feedback, _ = generate_feedback(combined_input)
             st.subheader("생성된 피드백:")
             st.markdown(feedback)
+
+class VideoTransformer(VideoTransformerBase):
+    def __init__(self):
+        self.frame = None
+
+    def transform(self, frame):
+        self.frame = frame.to_ndarray(format="bgr24")
+        return self.frame
+
+def extract_text_from_image(image):
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    text = pytesseract.image_to_string(gray)
+    return text
+
+st.header("OCR 기능")
+webrtc_ctx = webrtc_streamer(key="example", video_transformer_factory=VideoTransformer)
+
+if webrtc_ctx.video_transformer:
+    if st.button("Capture"):
+        image = webrtc_ctx.video_transformer.frame
+        if image is not None:
+            st.image(image, caption="Captured Image", use_column_width=True)
+            text = extract_text_from_image(image)
+            st.subheader("Extracted Text")
+            st.write(text)
+        else:
+            st.warning("No frame captured")
