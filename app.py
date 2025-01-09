@@ -1,7 +1,4 @@
 import streamlit as st
-from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
-import cv2
-import pytesseract
 import openai
 from feedback_logic import generate_feedback
 
@@ -17,10 +14,8 @@ if "additional_info_visible" not in st.session_state:
     st.session_state["additional_info_visible"] = False
 if "additional_info_content" not in st.session_state:
     st.session_state["additional_info_content"] = ""
-if "camera_active" not in st.session_state:
-    st.session_state["camera_active"] = False
-if "captured_frame" not in st.session_state:
-    st.session_state["captured_frame"] = None
+if "camera_mode" not in st.session_state:
+    st.session_state["camera_mode"] = False  # 카메라 모드 활성화 상태
 
 # 문제 입력 영역
 problem = st.text_area("수학 문제를 입력하세요:", placeholder="예: 직각삼각형 모양의 종이를 돌려 원뿔을 만들었을 때...")
@@ -57,43 +52,18 @@ if st.session_state["additional_info_visible"]:
             st.subheader("생성된 피드백:")
             st.markdown(feedback)
 
-# OCR 기능 추가
-class VideoTransformer(VideoTransformerBase):
-    def __init__(self):
-        self.frame = None
+# 카메라 입력 영역
+camera_button_label = "📷 카메라 열기" if not st.session_state["camera_mode"] else "📸 촬영"
 
-    def transform(self, frame):
-        self.frame = frame.to_ndarray(format="bgr24")
-        return self.frame
+if st.button(camera_button_label):
+    if not st.session_state["camera_mode"]:
+        st.session_state["camera_mode"] = True  # 카메라 모드 활성화
+    else:
+        st.session_state["camera_mode"] = False  # 촬영 완료 후 비활성화
 
-def extract_text_from_image(image):
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    text = pytesseract.image_to_string(gray, lang='kor+eng')  # 한국어와 영어 지원
-    return text
+if st.session_state["camera_mode"]:
+    image = st.camera_input("카메라로 문제를 캡처하세요")
 
-st.header("OCR 기능")
-
-if not st.session_state["camera_active"]:
-    if st.button("📷 Start Camera"):
-        st.session_state["camera_active"] = True
-else:
-    webrtc_ctx = webrtc_streamer(key="example", video_transformer_factory=VideoTransformer)
-
-    if webrtc_ctx.video_transformer:
-        if st.button("📸 촬영"):
-            image = webrtc_ctx.video_transformer.frame
-            if image is not None:
-                st.session_state["captured_frame"] = image
-                st.image(image, caption="Captured Image", use_column_width=True)
-
-                # OCR 수행
-                text = extract_text_from_image(image)
-                st.session_state["additional_info_content"] = text
-
-                # 텍스트 표시 및 text_area 업데이트
-                st.subheader("추출된 텍스트")
-                st.write(text)
-
-                st.session_state["camera_active"] = False
-            else:
-                st.warning("No frame captured")
+    if image:
+        st.success("이미지가 성공적으로 캡처되었습니다!")
+        # 추가 처리 로직을 여기 추가할 수 있습니다.
