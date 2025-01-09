@@ -5,7 +5,6 @@ import pytesseract
 import openai
 from feedback_logic import generate_feedback
 
-
 # OpenAI API 설정
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
@@ -20,6 +19,8 @@ if "additional_info_content" not in st.session_state:
     st.session_state["additional_info_content"] = ""
 if "camera_active" not in st.session_state:
     st.session_state["camera_active"] = False
+if "captured_frame" not in st.session_state:
+    st.session_state["captured_frame"] = None
 
 # 문제 입력 영역
 problem = st.text_area("수학 문제를 입력하세요:", placeholder="예: 직각삼각형 모양의 종이를 돌려 원뿔을 만들었을 때...")
@@ -67,25 +68,32 @@ class VideoTransformer(VideoTransformerBase):
 
 def extract_text_from_image(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    text = pytesseract.image_to_string(gray)
+    text = pytesseract.image_to_string(gray, lang='kor+eng')  # 한국어와 영어 지원
     return text
 
 st.header("OCR 기능")
 
-if st.session_state["camera_active"]:
+if not st.session_state["camera_active"]:
+    if st.button("📷 Start Camera"):
+        st.session_state["camera_active"] = True
+else:
     webrtc_ctx = webrtc_streamer(key="example", video_transformer_factory=VideoTransformer)
+
     if webrtc_ctx.video_transformer:
         if st.button("📸 촬영"):
             image = webrtc_ctx.video_transformer.frame
             if image is not None:
+                st.session_state["captured_frame"] = image
                 st.image(image, caption="Captured Image", use_column_width=True)
+
+                # OCR 수행
                 text = extract_text_from_image(image)
-                st.subheader("Extracted Text")
                 st.session_state["additional_info_content"] = text
+
+                # 텍스트 표시 및 text_area 업데이트
+                st.subheader("추출된 텍스트")
                 st.write(text)
+
                 st.session_state["camera_active"] = False
             else:
                 st.warning("No frame captured")
-else:
-    if st.button("📷 Start Camera"):
-        st.session_state["camera_active"] = True
