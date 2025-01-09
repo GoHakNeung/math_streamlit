@@ -54,6 +54,7 @@ if st.session_state["additional_info_visible"]:
             st.subheader("생성된 피드백:")
             st.markdown(feedback)
 
+# OCR 기능 추가
 class VideoTransformer(VideoTransformerBase):
     def __init__(self):
         self.frame = None
@@ -68,15 +69,21 @@ def extract_text_from_image(image):
     return text
 
 st.header("OCR 기능")
-webrtc_ctx = webrtc_streamer(key="example", video_transformer_factory=VideoTransformer)
 
-if webrtc_ctx.video_transformer:
-    if st.button("Capture"):
-        image = webrtc_ctx.video_transformer.frame
-        if image is not None:
-            st.image(image, caption="Captured Image", use_column_width=True)
-            text = extract_text_from_image(image)
-            st.subheader("Extracted Text")
-            st.write(text)
-        else:
-            st.warning("No frame captured")
+if st.session_state["camera_active"]:
+    webrtc_ctx = webrtc_streamer(key="example", video_transformer_factory=VideoTransformer)
+    if webrtc_ctx.video_transformer:
+        if st.button("📸 촬영"):
+            image = webrtc_ctx.video_transformer.frame
+            if image is not None:
+                st.image(image, caption="Captured Image", use_column_width=True)
+                text = extract_text_from_image(image)
+                st.subheader("Extracted Text")
+                st.session_state["additional_info_content"] = text
+                st.write(text)
+                st.session_state["camera_active"] = False
+            else:
+                st.warning("No frame captured")
+else:
+    if st.button("📷 Start Camera"):
+        st.session_state["camera_active"] = True
