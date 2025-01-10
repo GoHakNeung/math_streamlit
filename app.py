@@ -7,7 +7,6 @@ import easyocr
 
 # OpenAI API 설정
 openai.api_key = st.secrets["OPENAI_API_KEY"]
-pytesseract.pytesseract.tesseract_cmd = r'/app/.apt/usr/bin/tesseract'  # Streamlit 클라우드 환경에서 Tesseract 경로
 # 지원 언어 설정
 reader = easyocr.Reader(["ko", "en"])  # 지원 언어 설정
 
