@@ -1,7 +1,7 @@
 import streamlit as st
 import openai
 from feedback_logic import generate_feedback
-import pytesseract
+
 from PIL import Image
 import easyocr
 
