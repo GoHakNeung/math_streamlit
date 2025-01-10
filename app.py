@@ -3,11 +3,13 @@ import openai
 from feedback_logic import generate_feedback
 import pytesseract
 from PIL import Image
+import easyocr
 
 # OpenAI API 설정
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 pytesseract.pytesseract.tesseract_cmd = r'/app/.apt/usr/bin/tesseract'  # Streamlit 클라우드 환경에서 Tesseract 경로
-
+# 지원 언어 설정
+reader = easyocr.Reader(["ko", "en"])  # 지원 언어 설정
 
 
 # Streamlit 기본 구성
@@ -72,8 +74,11 @@ if st.session_state["camera_mode"]:
         st.success("이미지가 성공적으로 캡처되었습니다!")
         # st.image(image)  # 캡처된 이미지를 출력
         # # 추가 처리 로직을 여기 추가할 수 있습니다.
-        img = Image.open(image)
-        extracted_text = pytesseract.image_to_string(img)
-        st.text_area("추출된 텍스트:", value=extracted_text, height=200)
+        with st.spinner("텍스트 추출 중..."):
+            img = Image.open(image)
+            result = reader.readtext(img)
+            extracted_text = "\n".join([text[1] for text in result])
+            st.text_area("추출된 텍스트:", value=extracted_text, height=200)
+
     else:
         st.warning("이미지를 캡처해주세요!")
