@@ -1,8 +1,8 @@
 streamlit
 openai==0.28
 pandas
-streamlit-webrtc
 opencv-python-headless
-surya-ocr
 Pillow
+easyocr
+
 
