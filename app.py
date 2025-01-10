@@ -5,6 +5,7 @@ import openai
 from feedback_logic import generate_feedback
 import requests
 from PIL import Image
+from io import BytesIO
 
 # OpenAI API 설정
 openai.api_key = st.secrets["OPENAI_API_KEY"]
