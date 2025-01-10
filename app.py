@@ -6,7 +6,8 @@ from PIL import Image
 
 # OpenAI API 설정
 openai.api_key = st.secrets["OPENAI_API_KEY"]
-pytesseract.pytesseract.tesseract_cmd = r"/usr/bin/tesseract"  # Update this path according to your installation
+pytesseract.pytesseract.tesseract_cmd = r'/app/.apt/usr/bin/tesseract'  # Streamlit 클라우드 환경에서 Tesseract 경로
+
 
 
 # Streamlit 기본 구성
