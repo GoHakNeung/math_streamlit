@@ -69,5 +69,5 @@ if st.session_state["camera_mode"]:
         st.success("이미지가 성공적으로 캡처되었습니다!")
         st.image(image)  # 캡처된 이미지를 출력
         # 추가 처리 로직을 여기 추가할 수 있습니다.
-    st.session_state["camera_mode"] = False  # 촬영 완료 후 비활성화
+
 
