@@ -1,6 +1,8 @@
 import streamlit as st
 import openai
 from feedback_logic import generate_feedback
+import pytesseract
+from PIL import Image
 
 # OpenAI API 설정
 openai.api_key = st.secrets["OPENAI_API_KEY"]
@@ -63,8 +65,10 @@ if st.button(camera_button_label):
 
 if st.session_state["camera_mode"]:
     image = st.camera_input("카메라로 문제를 캡처하세요")
-    if image:
-        st.success("이미지가 성공적으로 캡처되었습니다!")
-        st.image(image)  # 캡처된 이미지를 출력
-        # 추가 처리 로직을 여기 추가할 수 있습니다.
+    st.session_state["camera_mode"] = False  # 촬영 완료 후 비활성화
+
+if image:
+    st.success("이미지가 성공적으로 캡처되었습니다!")
+    st.image(image)  # 캡처된 이미지를 출력
+    # 추가 처리 로직을 여기 추가할 수 있습니다.
 
