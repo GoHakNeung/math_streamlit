@@ -1,3 +1,5 @@
+# easyocr 버전, 성능이 떨어짐
+# 사진을 가로로 찍었을 때, 회전 기능 필요함.
 import streamlit as st
 import openai
 from feedback_logic import generate_feedback
