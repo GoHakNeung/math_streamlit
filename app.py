@@ -59,7 +59,7 @@ if st.session_state["additional_info_visible"]:
 
 # 카메라 입력 영역
 camera_button_label = "📷"
-def ocr_space_api(image, api_key="K86791344388957"):
+def ocr_space_api(image, api_key=ocr_space_api):
     url = "https://api.ocr.space/parse/image"
     files = {"file": image}
     data = {"apikey": api_key, "language": "kor"}
