@@ -8,7 +8,7 @@ from PIL import Image
 
 # OpenAI API 설정
 openai.api_key = st.secrets["OPENAI_API_KEY"]
-
+ocrspaceapi = st.secrets["ocr_space_api"]
 
 # Streamlit 기본 구성
 st.set_page_config(page_title="Math Feedback Service", layout="wide")
@@ -59,7 +59,7 @@ if st.session_state["additional_info_visible"]:
 
 # 카메라 입력 영역
 camera_button_label = "📷"
-def ocr_space_api(image, api_key=ocr_space_api):
+def ocr_space_api(image, api_key=ocrspaceapi):
     url = "https://api.ocr.space/parse/image"
     files = {"file": image}
     data = {"apikey": api_key, "language": "kor"}
