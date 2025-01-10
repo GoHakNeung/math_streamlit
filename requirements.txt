@@ -5,3 +5,4 @@ streamlit-webrtc
 opencv-python-headless
 pytesseract
 Pillow
+tesseract
