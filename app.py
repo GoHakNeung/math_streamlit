@@ -76,9 +76,8 @@ if st.button(camera_button_label):
     else:
         st.session_state["camera_mode"] = False  # 촬영 완료 후 비활성화
 
-if st.session_state["camera_mode"]:
+if st.session_state.get("camera_mode", False):
     image = st.camera_input("카메라로 문제를 캡처하세요")
-    
     if image:
         st.session_state["image"] = Image.open(image)  # PIL 이미지로 저장
         st.session_state["rotation_angle"] = 0  # 초기 회전 각도로 설정
