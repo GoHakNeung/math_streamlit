@@ -1,4 +1,6 @@
-# ocr_space_api 버전, 성능은 ? 
+# ocr_space_api 버전, 성능은 적당함.
+# 자르기 및 회전하기가 필요함.
+# >> gpt 코드 참고해서 작성하기.
 # 사진을 가로로 찍었을 때, 회전 기능 필요함.
 import streamlit as st
 import openai
