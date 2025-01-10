@@ -4,3 +4,4 @@ pandas
 streamlit-webrtc
 opencv-python-headless
 pytesseract
+PIL
