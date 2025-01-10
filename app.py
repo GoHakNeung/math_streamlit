@@ -53,7 +53,7 @@ if st.session_state["additional_info_visible"]:
             st.markdown(feedback)
 
 # 카메라 입력 영역
-camera_button_label = "📷" if not st.session_state["camera_mode"] else "촬영"
+camera_button_label = "📷"
 
 if st.button(camera_button_label):
     if not st.session_state["camera_mode"]:
@@ -63,6 +63,7 @@ if st.button(camera_button_label):
 
 if st.session_state["camera_mode"]:
     image = st.camera_input("카메라로 문제를 캡처하세요")
+    st.session_state["camera_mode"] = False  # 촬영 완료 후 비활성화    
 
     if image:
         st.success("이미지가 성공적으로 캡처되었습니다!")
