@@ -4,7 +4,7 @@ import streamlit as st
 import openai
 from feedback_logic import generate_feedback
 import requests
-from PIL import Image
+from PIL import Image,  ImageOps
 from io import BytesIO
 
 # OpenAI API 설정
