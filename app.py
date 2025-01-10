@@ -1,16 +1,13 @@
-# easyocr 버전, 성능이 떨어짐
+# ocr_space_api 버전, 성능은 ? 
 # 사진을 가로로 찍었을 때, 회전 기능 필요함.
 import streamlit as st
 import openai
 from feedback_logic import generate_feedback
-
+import requests
 from PIL import Image
-import easyocr
 
 # OpenAI API 설정
 openai.api_key = st.secrets["OPENAI_API_KEY"]
-# 지원 언어 설정
-reader = easyocr.Reader(["ko", "en"])  # 지원 언어 설정
 
 
 # Streamlit 기본 구성
@@ -62,6 +59,14 @@ if st.session_state["additional_info_visible"]:
 
 # 카메라 입력 영역
 camera_button_label = "📷"
+def ocr_space_api(image, api_key="K86791344388957"):
+    url = "https://api.ocr.space/parse/image"
+    files = {"file": image}
+    data = {"apikey": api_key, "language": "kor"}
+    response = requests.post(url, files=files, data=data)
+    result = response.json()
+    return result.get("ParsedResults")[0]["ParsedText"] if "ParsedResults" in result else "OCR 실패"
+
 
 if st.button(camera_button_label):
     if not st.session_state["camera_mode"]:
@@ -76,10 +81,10 @@ if st.session_state["camera_mode"]:
         # st.image(image)  # 캡처된 이미지를 출력
         # # 추가 처리 로직을 여기 추가할 수 있습니다.
         with st.spinner("텍스트 추출 중..."):
-            img = Image.open(image)
-            result = reader.readtext(img)
-            extracted_text = "\n".join([text[1] for text in result])
-            st.text_area("추출된 텍스트:", value=extracted_text, height=200)
+            text = ocr_space_api(image)
+            st.text_area("추출된 텍스트:", value=text, height=200)
+            # img = Image.open(image)
+
 
     else:
         st.warning("이미지를 캡처해주세요!")
