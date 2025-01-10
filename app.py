@@ -21,6 +21,8 @@ if "additional_info_content" not in st.session_state:
     st.session_state["additional_info_content"] = ""
 if "camera_mode" not in st.session_state:
     st.session_state["camera_mode"] = False  # 카메라 모드 활성화 상태
+if "rotation_angle" not in st.session_state:
+    st.session_state["rotation_angle"] = 0  # 회전 각도 저장
 
 # 문제 입력 영역
 problem = st.text_area("수학 문제를 입력하세요:", placeholder="예: 직각삼각형 모양의 종이를 돌려 원뿔을 만들었을 때...")
@@ -76,15 +78,47 @@ if st.button(camera_button_label):
 
 if st.session_state["camera_mode"]:
     image = st.camera_input("카메라로 문제를 캡처하세요")
+    
     if image:
+        st.session_state["image"] = Image.open(image)  # PIL 이미지로 저장
+        st.session_state["rotation_angle"] = 0  # 초기 회전 각도로 설정
         st.success("이미지가 성공적으로 캡처되었습니다!")
-        # st.image(image)  # 캡처된 이미지를 출력
-        # # 추가 처리 로직을 여기 추가할 수 있습니다.
-        with st.spinner("텍스트 추출 중..."):
-            text = ocr_space_api(image)
+
+if st.session_state["image"]:
+    # 회전 버튼
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("🔄 90도 회전"):
+            st.session_state["rotation_angle"] += 90
+            st.session_state["rotation_angle"] %= 360  # 360도 이상이면 0으로 순환
+    with col2:
+        if st.button("완료"):
+            # OCR 실행
+            with st.spinner("텍스트 추출 중..."):
+                buffer = BytesIO()
+                rotated_image = ImageOps.exif_transpose(st.session_state["image"].rotate(st.session_state["rotation_angle"]))
+                rotated_image.save(buffer, format="PNG")
+                buffer.seek(0)
+                text = ocr_space_api(buffer)
             st.text_area("추출된 텍스트:", value=text, height=200)
-            # img = Image.open(image)
+
+    # 회전된 이미지 표시
+    rotated_image = ImageOps.exif_transpose(st.session_state["image"].rotate(st.session_state["rotation_angle"]))
+    st.image(rotated_image, caption=f"회전 각도: {st.session_state['rotation_angle']}°", use_column_width=True)
+
+else:
+    st.button("📷 카메라 열기", on_click=lambda: st.session_state.update({"camera_mode": True}))
+    
+
+    # if image:
+    #     st.success("이미지가 성공적으로 캡처되었습니다!")
+    #     # st.image(image)  # 캡처된 이미지를 출력
+    #     # # 추가 처리 로직을 여기 추가할 수 있습니다.
+    #     with st.spinner("텍스트 추출 중..."):
+    #         text = ocr_space_api(image)
+    #         st.text_area("추출된 텍스트:", value=text, height=200)
+    #         # img = Image.open(image)
 
 
-    else:
-        st.warning("이미지를 캡처해주세요!")
+    # else:
+    #     st.warning("이미지를 캡처해주세요!")
