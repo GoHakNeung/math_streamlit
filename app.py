@@ -6,6 +6,7 @@ from PIL import Image
 
 # OpenAI API 설정
 openai.api_key = st.secrets["OPENAI_API_KEY"]
+pytesseract.pytesseract.tesseract_cmd = r"/path/to/tesseract"
 
 # Streamlit 기본 구성
 st.set_page_config(page_title="Math Feedback Service", layout="wide")
