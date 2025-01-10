@@ -3,10 +3,21 @@ import openai
 from feedback_logic import generate_feedback
 import pytesseract
 from PIL import Image
+from surya.ocr import run_ocr
+from surya.model.detection.model import load_model as load_det_model, load_processor as load_det_processor
+from surya.model.recognition.model import load_model as load_rec_model
+from surya.model.recognition.processor import load_processor as load_rec_processor
+
+image = Image.open(IMAGE_PATH)
+langs = ["en"] # Replace with your languages - optional but recommended
+det_processor, det_model = load_det_processor(), load_det_model()
+rec_model, rec_processor = load_rec_model(), load_rec_processor()
+
+predictions = run_ocr([image], [langs], det_model, det_processor, rec_model, rec_processor)
 
 # OpenAI API 설정
 openai.api_key = st.secrets["OPENAI_API_KEY"]
-pytesseract.pytesseract.tesseract_cmd = r'/app/.apt/usr/bin/tesseract'  # Streamlit 클라우드 환경에서 Tesseract 경로
+
 
 
 
@@ -59,6 +70,9 @@ if st.session_state["additional_info_visible"]:
 
 # 카메라 입력 영역
 camera_button_label = "📷"
+langs = ["ko"] # Replace with your languages - optional but recommended
+det_processor, det_model = load_det_processor(), load_det_model()
+rec_model, rec_processor = load_rec_model(), load_rec_processor()
 
 if st.button(camera_button_label):
     if not st.session_state["camera_mode"]:
@@ -69,12 +83,9 @@ if st.button(camera_button_label):
 if st.session_state["camera_mode"]:
     image = st.camera_input("카메라로 문제를 캡처하세요")
     if image:
-        st.success("이미지가 성공적으로 캡처되었습니다!")
-        # st.image(image)  # 캡처된 이미지를 출력
-        # # 추가 처리 로직을 여기 추가할 수 있습니다.
-        img = Image.open(image)
-        extracted_text = pytesseract.image_to_string(img)
-        st.text_area("추출된 텍스트:", value=extracted_text, height=200)
+        predictions = run_ocr([image], [langs], det_model, det_processor, rec_model, rec_processor)
+
+        st.text_area("추출된 텍스트:", value=predictions, height=200)
     else:
         st.warning("이미지를 캡처해주세요!")
 
