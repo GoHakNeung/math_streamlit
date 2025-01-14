@@ -34,13 +34,39 @@ if st.button("촬영"):
     st.session_state["ocr_text"] = ""  # OCR 결과 초기화
 
 # OCR API 호출 함수
-def ocr_space_api(image, api_key=ocrspaceapi):
+def ocr_space_api(image_path=None, image_bytes=None, api_key=ocrspaceapi, language="kor"):
+    """
+    OCR.space API를 호출하여 이미지에서 텍스트를 추출합니다.
+    
+    :param image_path: 이미지 파일 경로 (optional)
+    :param image_bytes: 이미지 데이터 (bytes, optional)
+    :param api_key: OCR.space API 키
+    :param language: OCR 언어 코드 (예: 'kor', 'eng')
+    :return: OCR 결과 텍스트
+    """
     url = "https://api.ocr.space/parse/image"
-    files = {"file": image}
-    data = {"apikey": api_key, "language": "kor"}
-    response = requests.post(url, files=files, data=data)
-    result = response.json()
-    return result.get("ParsedResults")[0]["ParsedText"] if "ParsedResults" in result else "OCR 실패"
+    headers = {"apikey": api_key}
+    
+    # 이미지 데이터를 파일 경로 또는 바이트 데이터로 처리
+    if image_path:
+        files = {"file": open(image_path, "rb")}
+    elif image_bytes:
+        files = {"file": image_bytes}
+    else:
+        raise ValueError("image_path 또는 image_bytes 중 하나를 제공해야 합니다.")
+    
+    data = {"language": language}
+    response = requests.post(url, headers=headers, files=files, data=data)
+    
+    # 결과 처리
+    if response.status_code == 200:
+        result = response.json()
+        if "ParsedResults" in result and result["ParsedResults"]:
+            return result["ParsedResults"][0]["ParsedText"]
+        else:
+            return "OCR 실패: 텍스트를 감지하지 못했습니다."
+    else:
+        return f"OCR 실패: {response.status_code} - {response.reason}"
 
 # 카메라 입력 (사진 촬영)
 if st.session_state["camera_mode"]:
@@ -80,7 +106,7 @@ if st.session_state["cropped_image"]:
             buffer = BytesIO()
             st.session_state["cropped_image"].save(buffer, format="PNG")
             buffer.seek(0)
-            ocr_result = ocr_space_api(buffer)
+            ocr_result = ocr_space_api(image_bytes=buffer)
             st.session_state["ocr_text"] = ocr_result
 
 # OCR 결과 텍스트 입력
