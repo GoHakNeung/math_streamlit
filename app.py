@@ -15,7 +15,7 @@ st.title("초등학교 수학 문제 피드백 서비스")
 
 # 상태 초기화
 if "additional_info_visible" not in st.session_state:
-    st.session_state["additional_info_visible"] = False
+    st.session_state["additional_info_visible"] = True
 if "additional_info_content" not in st.session_state:
     st.session_state["additional_info_content"] = ""
 if "camera_mode" not in st.session_state:
