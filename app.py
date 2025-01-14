@@ -79,14 +79,25 @@ if st.button(camera_button_label):
 if st.session_state["camera_mode"]:
     image = st.camera_input("카메라로 문제를 캡처하세요")
     if image:
-        st.success("이미지가 성공적으로 캡처되었습니다!")
-        # st.image(image)  # 캡처된 이미지를 출력
-        # # 추가 처리 로직을 여기 추가할 수 있습니다.
-        with st.spinner("텍스트 추출 중..."):
-            text = ocr_space_api(image)
-            st.text_area("추출된 텍스트:", value=text, height=200)
-            # img = Image.open(image)
-
+        img = Image.open(image)
+        st.image(img, caption="원본 이미지", use_column_width=True)
+    
+        # 회전 옵션
+        st.subheader("이미지 회전")
+        rotation_angle = st.selectbox("회전 각도 선택", [0, 90, 180, 270], index=0)
+        rotated_img = img.rotate(rotation_angle, expand=True)
+    
+        # 자르기 범위 설정
+        st.subheader("이미지 자르기")
+        width, height = rotated_img.size
+        left = st.slider("왼쪽", 0, width, 0)
+        top = st.slider("위쪽", 0, height, 0)
+        right = st.slider("오른쪽", 0, width, width)
+        bottom = st.slider("아래쪽", 0, height, height)
+    
+        # 자른 이미지 결과
+        cropped_img = rotated_img.crop((left, top, right, bottom))
+        st.image(cropped_img, caption="최종 이미지", use_column_width=True)
 
     else:
         st.warning("이미지를 캡처해주세요!")
