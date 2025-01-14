@@ -92,7 +92,9 @@ if st.session_state["image"]:
 
     # 완료 버튼
     if st.button("완료"):
-        st.session_state["cropped_image"] = cropped_img  # 자른 이미지를 저장
+        # 자른 이미지를 Pillow Image 객체로 변환
+        cropped_pillow_image = Image.fromarray(cropped_img)
+        st.session_state["cropped_image"] = cropped_pillow_image  # 자른 이미지를 저장
         st.session_state["image"] = None  # 원본 이미지를 초기화
         st.success("이미지 처리가 완료되었습니다!")
 
