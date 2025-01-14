@@ -1,7 +1,3 @@
-# ocr_space_api 버전, 성능은 적당함.
-# 자르기 및 회전하기가 필요함.
-# >> gpt 코드 참고해서 작성하기.
-# 사진을 가로로 찍었을 때, 회전 기능 필요함.
 import streamlit as st
 import openai
 from feedback_logic import generate_feedback
@@ -23,27 +19,36 @@ if "additional_info_visible" not in st.session_state:
 if "additional_info_content" not in st.session_state:
     st.session_state["additional_info_content"] = ""
 if "camera_mode" not in st.session_state:
-    st.session_state["camera_mode"] = True  # 카메라 활성화 상태
+    st.session_state["camera_mode"] = False  # 카메라 비활성화 상태
 if "image" not in st.session_state:
     st.session_state["image"] = None  # 촬영된 이미지
 
 # 문제 입력 영역
 problem = st.text_area("수학 문제를 입력하세요:", placeholder="예: 직각삼각형 모양의 종이를 돌려 원뿔을 만들었을 때...")
 
-# 피드백 요청 버튼
-if st.button("피드백 생성"):
-    if problem.strip():
-        with st.spinner("피드백을 생성 중입니다..."):
-            feedback, requires_more_info = generate_feedback(problem)
+# 버튼 레이아웃 설정
+col1, col2 = st.columns(2)
 
-            if requires_more_info:
-                st.warning("문제를 해결하기 위한 추가 정보가 필요합니다. 아래에 추가 정보를 입력하세요.")
-                st.session_state["additional_info_visible"] = True
-            else:
-                st.subheader("생성된 피드백:")
-                st.markdown(feedback)
-    else:
-        st.warning("문제를 입력해주세요!")
+# 촬영 버튼
+with col1:
+    if st.button("촬영"):
+        st.session_state["camera_mode"] = True  # 카메라 모드 활성화
+
+# 피드백 생성 버튼
+with col2:
+    if st.button("피드백 생성"):
+        if problem.strip():
+            with st.spinner("피드백을 생성 중입니다..."):
+                feedback, requires_more_info = generate_feedback(problem)
+
+                if requires_more_info:
+                    st.warning("문제를 해결하기 위한 추가 정보가 필요합니다. 아래에 추가 정보를 입력하세요.")
+                    st.session_state["additional_info_visible"] = True
+                else:
+                    st.subheader("생성된 피드백:")
+                    st.markdown(feedback)
+        else:
+            st.warning("문제를 입력해주세요!")
 
 # 추가 정보 입력 영역 (상태 기반으로 표시)
 if st.session_state["additional_info_visible"]:
@@ -62,7 +67,7 @@ if st.session_state["additional_info_visible"]:
             st.subheader("생성된 피드백:")
             st.markdown(feedback)
 
-
+# OCR API 호출 함수
 def ocr_space_api(image, api_key=ocrspaceapi):
     url = "https://api.ocr.space/parse/image"
     files = {"file": image}
@@ -70,7 +75,6 @@ def ocr_space_api(image, api_key=ocrspaceapi):
     response = requests.post(url, files=files, data=data)
     result = response.json()
     return result.get("ParsedResults")[0]["ParsedText"] if "ParsedResults" in result else "OCR 실패"
-
 
 # 카메라 입력 (사진 촬영)
 if st.session_state["camera_mode"]:
@@ -96,6 +100,6 @@ if st.session_state["image"] and not st.session_state["camera_mode"]:
 
     # 완료 버튼
     if st.button("완료"):
-        st.session_state["camera_mode"] = True  # 카메라 모드 다시 활성화
+        st.session_state["camera_mode"] = False  # 카메라 모드 비활성화
         st.session_state["image"] = None  # 이전 이미지 초기화
         st.success("이미지 처리가 완료되었습니다!")
