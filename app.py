@@ -9,6 +9,17 @@ from streamlit_cropper import st_cropper
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 ocrspaceapi = st.secrets["ocr_space_api"]
 
+# 상태 초기화
+if "additional_info_visible" not in st.session_state:
+    st.session_state["additional_info_visible"] = False
+if "additional_info_content" not in st.session_state:
+    st.session_state["additional_info_content"] = ""
+if "camera_mode" not in st.session_state:
+    st.session_state["camera_mode"] = False  # 카메라 비활성화 상태
+if "image" not in st.session_state:
+    st.session_state["image"] = None  # 촬영된 이미지
+    
+
 # Streamlit 기본 구성
 st.set_page_config(page_title="Math Feedback Service", layout="wide")
 st.title("초등학교 수학 문제 피드백 서비스")
@@ -54,15 +65,7 @@ if st.session_state["image"] and not st.session_state["camera_mode"]:
         st.success("이미지 처리가 완료되었습니다!")
 
 
-# 상태 초기화
-if "additional_info_visible" not in st.session_state:
-    st.session_state["additional_info_visible"] = False
-if "additional_info_content" not in st.session_state:
-    st.session_state["additional_info_content"] = ""
-if "camera_mode" not in st.session_state:
-    st.session_state["camera_mode"] = False  # 카메라 비활성화 상태
-if "image" not in st.session_state:
-    st.session_state["image"] = None  # 촬영된 이미지
+
 
 # 문제 입력 영역
 problem = st.text_area("수학 문제를 입력하세요:", placeholder="예: 직각삼각형 모양의 종이를 돌려 원뿔을 만들었을 때...")
