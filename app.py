@@ -23,7 +23,9 @@ if "additional_info_visible" not in st.session_state:
 if "additional_info_content" not in st.session_state:
     st.session_state["additional_info_content"] = ""
 if "camera_mode" not in st.session_state:
-    st.session_state["camera_mode"] = False  # 카메라 모드 활성화 상태
+    st.session_state["camera_mode"] = True  # 카메라 활성화 상태
+if "image" not in st.session_state:
+    st.session_state["image"] = None  # 촬영된 이미지
 
 # 문제 입력 영역
 problem = st.text_area("수학 문제를 입력하세요:", placeholder="예: 직각삼각형 모양의 종이를 돌려 원뿔을 만들었을 때...")
@@ -60,8 +62,7 @@ if st.session_state["additional_info_visible"]:
             st.subheader("생성된 피드백:")
             st.markdown(feedback)
 
-# 카메라 입력 영역
-camera_button_label = "📷"
+
 def ocr_space_api(image, api_key=ocrspaceapi):
     url = "https://api.ocr.space/parse/image"
     files = {"file": image}
@@ -71,29 +72,30 @@ def ocr_space_api(image, api_key=ocrspaceapi):
     return result.get("ParsedResults")[0]["ParsedText"] if "ParsedResults" in result else "OCR 실패"
 
 
-if st.button(camera_button_label):
-    if not st.session_state["camera_mode"]:
-        st.session_state["camera_mode"] = True  # 카메라 모드 활성화
-    else:
-        st.session_state["camera_mode"] = False  # 촬영 완료 후 비활성화
-
+# 카메라 입력 (사진 촬영)
 if st.session_state["camera_mode"]:
+    st.subheader("📷 사진을 촬영하세요")
     image = st.camera_input("카메라로 문제를 캡처하세요")
     if image:
-        # 업로드된 이미지를 Pillow로 변환
-        img = Image.open(image)
-    
-        # Cropper UI 표시
-        st.subheader("이미지를 자르세요")
-        cropped_img = st_cropper(img, realtime_update=True, box_color="blue", aspect_ratio=None)
-    
-        # 자른 이미지 표시
-        st.image(cropped_img, caption="자른 이미지", use_container_width=True)
-    
-        # '완료' 버튼으로 추가 작업 연결
-        if st.button("완료"):
-            st.success("이미지가 성공적으로 처리되었습니다!")
+        st.session_state["image"] = Image.open(image)
+        st.session_state["camera_mode"] = False  # 카메라 모드 비활성화
+        st.success("사진이 성공적으로 캡처되었습니다!")
 
+# 이미지 자르기 및 완료 처리
+if st.session_state["image"] and not st.session_state["camera_mode"]:
+    st.subheader("이미지를 자르세요")
+    cropped_img = st_cropper(
+        st.session_state["image"],
+        realtime_update=True,
+        box_color="blue",
+        aspect_ratio=None
+    )
 
-    else:
-        st.warning("이미지를 캡처해주세요!")
+    # 자른 이미지 표시
+    st.image(cropped_img, caption="자른 이미지", use_container_width=True)
+
+    # 완료 버튼
+    if st.button("완료"):
+        st.session_state["camera_mode"] = True  # 카메라 모드 다시 활성화
+        st.session_state["image"] = None  # 이전 이미지 초기화
+        st.success("이미지 처리가 완료되었습니다!")
