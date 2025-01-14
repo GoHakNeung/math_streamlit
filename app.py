@@ -20,6 +20,8 @@ if "image" not in st.session_state:
     st.session_state["image"] = None  # 촬영된 이미지
 if "cropped_image" not in st.session_state:
     st.session_state["cropped_image"] = None  # 자른 이미지
+if "ocr_text" not in st.session_state:
+    st.session_state["ocr_text"] = ""  # OCR 결과 텍스트
 
 # Streamlit 기본 구성
 st.set_page_config(page_title="Math Feedback Service", layout="wide")
@@ -28,6 +30,7 @@ st.title("초등학교 수학 문제 피드백 서비스")
 if st.button("촬영"):
     st.session_state["camera_mode"] = True  # 카메라 모드 활성화
     st.session_state["cropped_image"] = None  # 이전 자른 이미지 초기화
+    st.session_state["ocr_text"] = ""  # OCR 결과 초기화
 
 # OCR API 호출 함수
 def ocr_space_api(image, api_key=ocrspaceapi):
@@ -66,9 +69,22 @@ if st.session_state["image"]:
         st.session_state["image"] = None  # 원본 이미지를 초기화
         st.success("이미지 처리가 완료되었습니다!")
 
-# 자른 이미지 최종 표시
+# 자른 이미지 최종 표시 및 OCR 처리
 if st.session_state["cropped_image"]:
     st.image(st.session_state["cropped_image"], caption="최종 자른 이미지", use_container_width=True)
+
+    # OCR 버튼 추가
+    if st.button("OCR 실행"):
+        with st.spinner("OCR 실행 중..."):
+            buffer = BytesIO()
+            st.session_state["cropped_image"].save(buffer, format="PNG")
+            buffer.seek(0)
+            ocr_result = ocr_space_api(buffer)
+            st.session_state["ocr_text"] = ocr_result
+
+# OCR 결과 텍스트 입력
+if st.session_state["ocr_text"]:
+    st.text_area("OCR 결과:", value=st.session_state["ocr_text"], height=200)
 
 # 문제 입력 영역
 problem = st.text_area("수학 문제를 입력하세요:", placeholder="예: 직각삼각형 모양의 종이를 돌려 원뿔을 만들었을 때...")
