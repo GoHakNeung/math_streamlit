@@ -88,7 +88,7 @@ if st.session_state["camera_mode"]:
         cropped_img = st_cropper(img, realtime_update=True, box_color="blue", aspect_ratio=None)
     
         # 자른 이미지 표시
-        st.image(cropped_img, caption="자른 이미지", use_column_width=True)
+        st.image(cropped_img, caption="자른 이미지", use_container_width=True)
     
         # '완료' 버튼으로 추가 작업 연결
         if st.button("완료"):
