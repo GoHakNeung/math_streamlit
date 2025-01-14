@@ -5,6 +5,7 @@ import requests
 from PIL import Image
 from streamlit_cropper import st_cropper
 from io import BytesIO
+import numpy as np
 
 # OpenAI API 설정
 openai.api_key = st.secrets["OPENAI_API_KEY"]
@@ -93,7 +94,7 @@ if st.session_state["image"]:
     # 완료 버튼
     if st.button("완료"):
         # 자른 이미지를 Pillow Image 객체로 변환
-        cropped_pillow_image = Image.fromarray(cropped_img)
+        cropped_pillow_image = Image.fromarray(np.array(cropped_img))
         st.session_state["cropped_image"] = cropped_pillow_image  # 자른 이미지를 저장
         st.session_state["image"] = None  # 원본 이미지를 초기화
         st.success("이미지 처리가 완료되었습니다!")
