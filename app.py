@@ -18,7 +18,8 @@ if "camera_mode" not in st.session_state:
     st.session_state["camera_mode"] = False  # 카메라 비활성화 상태
 if "image" not in st.session_state:
     st.session_state["image"] = None  # 촬영된 이미지
-    
+if "cropped_image" not in st.session_state:
+    st.session_state["cropped_image"] = None  # 자른 이미지
 
 # Streamlit 기본 구성
 st.set_page_config(page_title="Math Feedback Service", layout="wide")
@@ -26,6 +27,7 @@ st.title("초등학교 수학 문제 피드백 서비스")
 
 if st.button("촬영"):
     st.session_state["camera_mode"] = True  # 카메라 모드 활성화
+    st.session_state["cropped_image"] = None  # 이전 자른 이미지 초기화
 
 # OCR API 호출 함수
 def ocr_space_api(image, api_key=ocrspaceapi):
@@ -46,7 +48,7 @@ if st.session_state["camera_mode"]:
         st.success("사진이 성공적으로 캡처되었습니다!")
 
 # 이미지 자르기 및 완료 처리
-if st.session_state["image"] and not st.session_state["camera_mode"]:
+if st.session_state["image"]:
     st.subheader("이미지를 자르세요")
     cropped_img = st_cropper(
         st.session_state["image"],
@@ -60,19 +62,18 @@ if st.session_state["image"] and not st.session_state["camera_mode"]:
 
     # 완료 버튼
     if st.button("완료"):
-        st.session_state["camera_mode"] = False  # 카메라 모드 비활성화
-        st.session_state["image"] = None  # 이전 이미지 초기화
+        st.session_state["cropped_image"] = cropped_img  # 자른 이미지를 저장
+        st.session_state["image"] = None  # 원본 이미지를 초기화
         st.success("이미지 처리가 완료되었습니다!")
 
-
-
+# 자른 이미지 최종 표시
+if st.session_state["cropped_image"]:
+    st.image(st.session_state["cropped_image"], caption="최종 자른 이미지", use_container_width=True)
 
 # 문제 입력 영역
 problem = st.text_area("수학 문제를 입력하세요:", placeholder="예: 직각삼각형 모양의 종이를 돌려 원뿔을 만들었을 때...")
 
-
 # 피드백 생성 버튼
-
 if st.button("피드백 생성"):
     if problem.strip():
         with st.spinner("피드백을 생성 중입니다..."):
@@ -103,4 +104,3 @@ if st.session_state["additional_info_visible"]:
             feedback, _ = generate_feedback(combined_input)
             st.subheader("생성된 피드백:")
             st.markdown(feedback)
-
