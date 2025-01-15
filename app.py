@@ -36,15 +36,7 @@ if st.button("촬영"):
 
 # OCR API 호출 함수
 def ocr_space_api(image_path=None, image_bytes=None, api_key=ocrspaceapi, language="kor"):
-    """
-    OCR.space API를 호출하여 이미지에서 텍스트를 추출합니다.
-    
-    :param image_path: 이미지 파일 경로 (optional)
-    :param image_bytes: 이미지 데이터 (bytes, optional)
-    :param api_key: OCR.space API 키
-    :param language: OCR 언어 코드 (예: 'kor', 'eng')
-    :return: OCR 결과 텍스트
-    """
+
     url = "https://api.ocr.space/parse/image"
     headers = {"apikey": api_key}
     
@@ -62,6 +54,8 @@ def ocr_space_api(image_path=None, image_bytes=None, api_key=ocrspaceapi, langua
     # 결과 처리
     if response.status_code == 200:
         result = response.json()
+        print(result)  # 디버깅을 위해 결과 출력
+
         if "ParsedResults" in result and result["ParsedResults"]:
             return result["ParsedResults"][0]["ParsedText"]
         else:
@@ -111,6 +105,8 @@ if st.session_state["cropped_image"]:
             buffer.seek(0)
             ocr_result = ocr_space_api(image_bytes=buffer)
             st.session_state["ocr_text"] = ocr_result
+            st.text_area("OCR 디버그 결과:", value=ocr_result, height=200)  # OCR 결과 출력
+
 
 # OCR 결과 텍스트 입력
 if st.session_state["ocr_text"]:
