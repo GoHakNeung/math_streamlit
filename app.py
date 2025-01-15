@@ -109,9 +109,10 @@ if st.session_state["image"]:
         cropped_pillow_image = Image.fromarray(np.array(cropped_img))
         st.session_state["cropped_image"] = cropped_pillow_image  # 자른 이미지를 저장
         cropped_pillow_image.save("image_cropped.png")
-        st.session_state["cropped_image_path"] = "image_cropped.png"
+        st.session_state["cropped_image_path"] = "con_image_cropped.png"
         st.session_state["image"] = None  # 원본 이미지를 초기화
-        enhance_contrast_and_emphasize_text("image_cropped.png", "con_image_cropped.png" )
+        emphasized_image = enhance_contrast_and_emphasize_text("image_cropped.png", "con_image_cropped.png" )
+        st.session_state["cropped_image"] = emphasized_image
 
         # st.success("이미지 처리가 완료되었습니다!")
 
