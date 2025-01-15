@@ -7,7 +7,6 @@ from streamlit_cropper import st_cropper
 from io import BytesIO
 import numpy as np
 
-global image
 
 # OpenAI API 설정
 openai.api_key = st.secrets["OPENAI_API_KEY"]
@@ -67,7 +66,6 @@ def ocr_space_api(image_path=None, image_bytes=None, api_key=ocrspaceapi, langua
 
 # 카메라 입력 (사진 촬영)
 if st.session_state["camera_mode"]:
-    global image
     st.subheader("📷 사진을 촬영하세요")
     image = st.camera_input("카메라로 문제를 캡처하세요")
     if image:
@@ -93,12 +91,11 @@ if st.session_state["image"]:
         # 자른 이미지를 Pillow Image 객체로 변환
         cropped_pillow_image = Image.fromarray(np.array(cropped_img))
         st.session_state["cropped_image"] = cropped_pillow_image  # 자른 이미지를 저장
-        # st.session_state["image"] = None  # 원본 이미지를 초기화
+        st.session_state["image"] = None  # 원본 이미지를 초기화
         st.success("이미지 처리가 완료되었습니다!")
 
 # 자른 이미지 최종 표시 및 OCR 처리
 if st.session_state["cropped_image"]:
-    global image
     st.image(st.session_state["cropped_image"], caption="최종 자른 이미지", use_container_width=True)
 
     # OCR 버튼 추가
@@ -108,7 +105,7 @@ if st.session_state["cropped_image"]:
             st.session_state["cropped_image"].save(buffer, format="PNG")
             image_bytes = buffer.getvalue()
             buffer.seek(0)
-            ocr_result = ocr_space_api(image_bytes=image)
+            ocr_result = ocr_space_api(image_bytes=buffer)
             st.session_state["ocr_text"] = ocr_result
             st.text_area("OCR 디버그 결과:", value=ocr_result, height=200)  # OCR 결과 출력
 
