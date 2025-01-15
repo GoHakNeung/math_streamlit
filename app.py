@@ -7,6 +7,8 @@ from streamlit_cropper import st_cropper
 from io import BytesIO
 import numpy as np
 
+global image
+
 # OpenAI API 설정
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 ocrspaceapi = st.secrets["ocr_space_api"]
@@ -65,6 +67,7 @@ def ocr_space_api(image_path=None, image_bytes=None, api_key=ocrspaceapi, langua
 
 # 카메라 입력 (사진 촬영)
 if st.session_state["camera_mode"]:
+    global image
     st.subheader("📷 사진을 촬영하세요")
     image = st.camera_input("카메라로 문제를 캡처하세요")
     if image:
@@ -95,6 +98,7 @@ if st.session_state["image"]:
 
 # 자른 이미지 최종 표시 및 OCR 처리
 if st.session_state["cropped_image"]:
+    global image
     st.image(st.session_state["cropped_image"], caption="최종 자른 이미지", use_container_width=True)
 
     # OCR 버튼 추가
