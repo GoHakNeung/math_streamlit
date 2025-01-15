@@ -95,6 +95,9 @@ if st.session_state["image"]:
         st.session_state["cropped_image_path"] = "image_cropped.png"
         st.session_state["image"] = None  # 원본 이미지를 초기화
         st.success("이미지 처리가 완료되었습니다!")
+
+        st.image(st.session_state["cropped_image"], caption="최종 자른 이미지", use_container_width=True)
+
     
         # OCR 실행
         ocr_result = ocr_space_api(image_path="image_cropped.png")
