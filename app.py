@@ -2,7 +2,7 @@ import streamlit as st
 import openai
 from feedback_logic import generate_feedback
 import requests
-from PIL import Image
+from PIL import Image, ImageEnhance, ImageOps
 from streamlit_cropper import st_cropper
 from io import BytesIO
 import numpy as np
@@ -65,6 +65,22 @@ def ocr_space_api(image_path=None, image_bytes=None, api_key=ocrspaceapi, langua
     else:
         return f"OCR 실패: {response.status_code} - {response.reason}"
 
+def enhance_contrast_and_emphasize_text(image_path, output_path):
+    # 이미지 열기
+    image = Image.open(image_path).convert("L")  # Grayscale로 변환
+
+    # 대비 조정: 배경을 더 밝게, 텍스트를 더 어둡게
+    enhancer = ImageEnhance.Contrast(image)
+    enhanced_image = enhancer.enhance(3)  # 대비를 증가 (값 조정 가능)
+
+    # 이미지 이진화: 텍스트 강조
+    threshold = 128
+    binary_image = enhanced_image.point(lambda x: 255 if x > threshold else 0, mode='1')
+
+    # 저장
+    binary_image.save(output_path)
+    
+
 # 카메라 입력 (사진 촬영)
 if st.session_state["camera_mode"]:
     st.subheader("📷 사진을 촬영하세요")
@@ -95,6 +111,8 @@ if st.session_state["image"]:
         cropped_pillow_image.save("image_cropped.png")
         st.session_state["cropped_image_path"] = "image_cropped.png"
         st.session_state["image"] = None  # 원본 이미지를 초기화
+        enhance_contrast_and_emphasize_text("image_cropped.png", "con_image_cropped.png" )
+
         # st.success("이미지 처리가 완료되었습니다!")
 
 
@@ -105,7 +123,7 @@ if st.session_state["cropped_image"]:
     # OCR 버튼 추가
     if st.button("문제 입력하기"):
         with st.spinner("OCR 실행 중..."):
-            ocr_result = ocr_space_api(image_path="image_cropped.png")
+            ocr_result = ocr_space_api(image_path="con_image_cropped.png")
             st.session_state["ocr_text"] = ocr_result
             st.session_state["problem_text"] = ocr_result  # 문제 텍스트에 OCR 결과 저장
             # st.success("텍스트 추출이 완료되었습니다!")
