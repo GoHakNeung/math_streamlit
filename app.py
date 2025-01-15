@@ -7,7 +7,6 @@ from streamlit_cropper import st_cropper
 from io import BytesIO
 import numpy as np
 
-
 # OpenAI API 설정
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 ocrspaceapi = st.secrets["ocr_space_api"]
@@ -25,6 +24,8 @@ if "cropped_image" not in st.session_state:
     st.session_state["cropped_image"] = None  # 자른 이미지
 if "ocr_text" not in st.session_state:
     st.session_state["ocr_text"] = ""  # OCR 결과 텍스트
+if "problem_text" not in st.session_state:
+    st.session_state["problem_text"] = ""  # 문제 텍스트
 
 # Streamlit 기본 구성
 st.set_page_config(page_title="Math Feedback Service", layout="wide")
@@ -96,15 +97,18 @@ if st.session_state["image"]:
         st.session_state["image"] = None  # 원본 이미지를 초기화
         st.success("이미지 처리가 완료되었습니다!")
 
-
-    
         # OCR 실행
         ocr_result = ocr_space_api(image_path="image_cropped.png")
         st.session_state["ocr_text"] = ocr_result
-        st.text_area("OCR 디버그 결과:", value=ocr_result, height=200)  # OCR 결과 출력
+        st.session_state["problem_text"] = ocr_result  # 문제 텍스트에 OCR 결과 저장
+        st.success("텍스트 추출이 완료되었습니다!")
 
 # 문제 입력 영역
-problem = st.text_area("수학 문제를 입력하세요:", placeholder="예: 직각삼각형 모양의 종이를 돌려 원뿔을 만들었을 때...")
+problem = st.text_area(
+    "수학 문제를 입력하세요:", 
+    placeholder="예: 직각삼각형 모양의 종이를 돌려 원뿔을 만들었을 때...",
+    value=st.session_state["problem_text"]  # OCR 결과를 기본값으로 설정
+)
 
 # 피드백 생성 버튼
 if st.button("피드백 생성"):
