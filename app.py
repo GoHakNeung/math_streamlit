@@ -101,26 +101,6 @@ if st.session_state["image"]:
         st.session_state["ocr_text"] = ocr_result
         st.text_area("OCR 디버그 결과:", value=ocr_result, height=200)  # OCR 결과 출력
 
-# # 자른 이미지 최종 표시 및 OCR 처리
-# if st.session_state["cropped_image"]:
-#     st.image(st.session_state["cropped_image"], caption="최종 자른 이미지", use_container_width=True)
-
-#     # OCR 버튼 추가
-#     if st.button("OCR 실행"):
-#         with st.spinner("OCR 실행 중..."):
-#             buffer = BytesIO()
-#             st.session_state["cropped_image"].save(buffer, format="PNG")
-#             image_bytes = buffer.getvalue()
-#             buffer.seek(0)
-#             ocr_result = ocr_space_api(image_bytes=buffer)
-#             st.session_state["ocr_text"] = ocr_result
-#             st.text_area("OCR 디버그 결과:", value=ocr_result, height=200)  # OCR 결과 출력
-
-
-# # OCR 결과 텍스트 입력
-# if st.session_state["ocr_text"]:
-#     st.text_area("OCR 결과:", value=st.session_state["ocr_text"], height=200)
-
 # 문제 입력 영역
 problem = st.text_area("수학 문제를 입력하세요:", placeholder="예: 직각삼각형 모양의 종이를 돌려 원뿔을 만들었을 때...")
 
