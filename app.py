@@ -95,13 +95,21 @@ if st.session_state["image"]:
         cropped_pillow_image.save("image_cropped.png")
         st.session_state["cropped_image_path"] = "image_cropped.png"
         st.session_state["image"] = None  # 원본 이미지를 초기화
-        st.success("이미지 처리가 완료되었습니다!")
+        # st.success("이미지 처리가 완료되었습니다!")
 
-        # OCR 실행
-        ocr_result = ocr_space_api(image_path="image_cropped.png")
-        st.session_state["ocr_text"] = ocr_result
-        st.session_state["problem_text"] = ocr_result  # 문제 텍스트에 OCR 결과 저장
-        st.success("텍스트 추출이 완료되었습니다!")
+
+
+if st.session_state["cropped_image"]:
+    st.image(st.session_state["cropped_image"], caption="최종 자른 이미지", use_container_width=True)
+
+    # OCR 버튼 추가
+    if st.button("OCR 실행"):
+        with st.spinner("OCR 실행 중..."):
+            ocr_result = ocr_space_api(image_path="image_cropped.png")
+            st.session_state["ocr_text"] = ocr_result
+            st.session_state["problem_text"] = ocr_result  # 문제 텍스트에 OCR 결과 저장
+            # st.success("텍스트 추출이 완료되었습니다!")
+
 
 # 문제 입력 영역
 problem = st.text_area(
