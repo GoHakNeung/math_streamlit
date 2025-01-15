@@ -102,8 +102,9 @@ if st.session_state["cropped_image"]:
         with st.spinner("OCR 실행 중..."):
             buffer = BytesIO()
             st.session_state["cropped_image"].save(buffer, format="PNG")
+            image_bytes = buffer.getvalue()
             buffer.seek(0)
-            ocr_result = ocr_space_api(image_bytes=buffer)
+            ocr_result = ocr_space_api(image_bytes=image_byte)
             st.session_state["ocr_text"] = ocr_result
             st.text_area("OCR 디버그 결과:", value=ocr_result, height=200)  # OCR 결과 출력
 
