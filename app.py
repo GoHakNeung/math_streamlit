@@ -90,7 +90,7 @@ if st.session_state["image"]:
         # 자른 이미지를 Pillow Image 객체로 변환
         cropped_pillow_image = Image.fromarray(np.array(cropped_img))
         st.session_state["cropped_image"] = cropped_pillow_image  # 자른 이미지를 저장
-        st.session_state["image"] = None  # 원본 이미지를 초기화
+        # st.session_state["image"] = None  # 원본 이미지를 초기화
         st.success("이미지 처리가 완료되었습니다!")
 
 # 자른 이미지 최종 표시 및 OCR 처리
@@ -104,7 +104,7 @@ if st.session_state["cropped_image"]:
             st.session_state["cropped_image"].save(buffer, format="PNG")
             image_bytes = buffer.getvalue()
             buffer.seek(0)
-            ocr_result = ocr_space_api(image_bytes=image_byte)
+            ocr_result = ocr_space_api(image_bytes=image)
             st.session_state["ocr_text"] = ocr_result
             st.text_area("OCR 디버그 결과:", value=ocr_result, height=200)  # OCR 결과 출력
 
