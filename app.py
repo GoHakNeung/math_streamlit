@@ -88,7 +88,7 @@ if st.session_state["image"]:
     st.image(cropped_img, caption="자른 이미지", use_container_width=True)
 
     # 완료 버튼
-    if st.button("완료"):
+    if st.button("사진 자르기"):
         # 자른 이미지를 Pillow Image 객체로 변환
         cropped_pillow_image = Image.fromarray(np.array(cropped_img))
         st.session_state["cropped_image"] = cropped_pillow_image  # 자른 이미지를 저장
@@ -103,7 +103,7 @@ if st.session_state["cropped_image"]:
     st.image(st.session_state["cropped_image"], caption="최종 자른 이미지", use_container_width=True)
 
     # OCR 버튼 추가
-    if st.button("OCR 실행"):
+    if st.button("문제 입력하기"):
         with st.spinner("OCR 실행 중..."):
             ocr_result = ocr_space_api(image_path="image_cropped.png")
             st.session_state["ocr_text"] = ocr_result
